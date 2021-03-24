@@ -13,7 +13,7 @@ namespace Triplet
     {
         private readonly IWorkWithConsole _workWithConsole;
         private readonly IMainLogic _mainLogic;
-        CancellationTokenSource cts;
+        
 
         public StartApp(IWorkWithConsole workWithConsole, IMainLogic mainLogic)
         {
@@ -21,9 +21,9 @@ namespace Triplet
             _mainLogic = mainLogic;
         }
 
-        public void StartProgram(CancellationTokenSource cts)
+        public void StartProgram(CancellationTokenSource _cts)
         {
-            this.cts = cts;
+            CancellationTokenSource cts = _cts;
             string pathToFile = _workWithConsole.InputPath();
             Dictionary<string, int> allTriplet = new Dictionary<string, int>();
             if (!_mainLogic.CheckToExistFile(pathToFile))
@@ -36,8 +36,11 @@ namespace Triplet
                     _workWithConsole.OutputResult(allTriplet, startTime);
                 }).Start();
 
+                
                 _workWithConsole.CancelApp(cts);
             }
+
+
         }
     }
 }

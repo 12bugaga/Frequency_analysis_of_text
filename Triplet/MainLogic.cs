@@ -17,7 +17,8 @@ namespace Triplet
     public class MainLogic : IMainLogic
     {
         protected int changeCout;
-        ConcurrentDictionary<string, int> allTriplet;
+        ConcurrentDictionary<string, int> allTriplet, resultAllTriplet;
+
         CancellationTokenSource cts;
 
         public MainLogic()
@@ -35,25 +36,16 @@ namespace Triplet
         {
             return File.ReadAllLines(pathToFile);
         }
-
         public Dictionary<string, int> GetAllTriplet(string pathToFile, CancellationTokenSource cts)
         {
             this.cts = cts;
             string[] allLine = ReadFromFile(pathToFile);
             DateTime startTime = DateTime.Now;
             ConcurrentDictionary<string, int> localAllTriplet = new ConcurrentDictionary<string, int>();
-            foreach (string line in allLine)
-            {
-                TripletInLineAsync(line);
-                if (cts.Token.IsCancellationRequested)
-                    break;
-            }
-            return allTriplet.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
-        }
 
-        private async void TripletInLineAsync(string line)
-        {
-            await Task.Run(() => TripletInLine(line));
+            Parallel.ForEach(allLine, TripletInLine);
+
+            return allTriplet.OrderByDescending(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         private void TripletInLine(string line)
@@ -64,13 +56,13 @@ namespace Triplet
             {
                 for(int i=0; i<word.Length-2; i++)
                 {
-                    if (cts.Token.IsCancellationRequested)
-                        break;
                     triplet = word.Substring(i, 3);
                     if (allTriplet.ContainsKey(triplet))
                         allTriplet.AddOrUpdate(triplet, 1, (key, oldValue) => oldValue + 1);
                     else
                         allTriplet.TryAdd(triplet, 1);
+                    if (cts.Token.IsCancellationRequested)
+                        break;
                 }
                 if (cts.Token.IsCancellationRequested)
                     break;
