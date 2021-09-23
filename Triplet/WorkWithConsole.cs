@@ -9,7 +9,8 @@ namespace Triplet
     {
         string InputPath();
         void MessageFileNotExist();
-        void OutputResult(Dictionary<string, int> triplet, DateTime time);
+        public int InputAmountWords();
+        void OutputResult(Dictionary<string, int> triplet, int count, DateTime time);
         void CancelApp(CancellationTokenSource cts);
     }
 
@@ -23,15 +24,24 @@ namespace Triplet
             return path;
         }
 
+        public int InputAmountWords()
+        {
+            string line ;
+            Console.WriteLine("Input amount words in phrases: ");
+            line = Console.ReadLine();
+            int.TryParse(line, out int amount);
+            return amount;
+        }
+
         public void MessageFileNotExist()
         {
             Console.WriteLine("File not exist!");
         }
 
-        public void OutputResult(Dictionary<string, int> triplet, DateTime time)
+        public void OutputResult(Dictionary<string, int> triplet, int count, DateTime time)
         {
             string result="";
-            int count = 10, i=0;
+            int i=0;
             foreach(string key in triplet.Keys)
             {
                 if (i == count)

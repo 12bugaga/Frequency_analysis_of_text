@@ -13,7 +13,6 @@ namespace Triplet
     {
         private readonly IWorkWithConsole _workWithConsole;
         private readonly IMainLogic _mainLogic;
-        
 
         public StartApp(IWorkWithConsole workWithConsole, IMainLogic mainLogic)
         {
@@ -25,6 +24,7 @@ namespace Triplet
         {
             CancellationTokenSource cts = _cts;
             string pathToFile = _workWithConsole.InputPath();
+            int amountWordsInPhrases = _workWithConsole.InputAmountWords();
             Dictionary<string, int> allTriplet = new Dictionary<string, int>();
             if (!_mainLogic.CheckToExistFile(pathToFile))
                 _workWithConsole.MessageFileNotExist();
@@ -32,8 +32,8 @@ namespace Triplet
             {
                 DateTime startTime = DateTime.Now;
                 new Thread(delegate () {
-                    allTriplet = _mainLogic.GetAllTriplet(pathToFile, cts);
-                    _workWithConsole.OutputResult(allTriplet, startTime);
+                    allTriplet = _mainLogic.GetAllDoubling(pathToFile, cts, amountWordsInPhrases);
+                    _workWithConsole.OutputResult(allTriplet, 50, startTime);
                 }).Start();
 
                 
